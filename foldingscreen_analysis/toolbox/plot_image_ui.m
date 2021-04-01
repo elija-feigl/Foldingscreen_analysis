@@ -1,4 +1,4 @@
-%origin: https://github.com/JPSS/MATLAB_TOOLBOX
+% NOTE: modified from MATLABTOOLBOX
 
 function [ cur_fig ] = plot_image_ui(img,varargin)
 %   plots image, adds sliders for colormap min, colormap max and data range

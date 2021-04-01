@@ -1,0 +1,52 @@
+### General ###
+# Use this template, if you stuck to the standard folding screen, as published in "How we make DNA Origami". You may change the lane numbering according to the order of your gel
+
+User = FK
+Project = Project Name
+Design_name = Designv3
+Date = 26.04.2018 				# Date in format DD.MM.YYYY
+Scaffold_type = 8064 				# name of scaffold,
+Lattice_type = honeycomb			        # honeycomb or square lattice
+Scaffold_concentration = 50 			# nM except for RM2
+Staple_concentration = 	200 			# nM
+tem_verified = Yes                                 # yes/no
+Comment = 					# missing lanes, pipetting errors, deviations from ifs, etc
+Published =                                        # CIT/no (one line please)
+
+### Sample information (Lanes left to right) ###
+# Please, specify the sample that was loaded for each lane. 
+
+Lane_01 = 1kb_ladder
+Lane_02 = scaffold
+
+Lane_03 = RM1_diluted 				# use RM1 if you forgot to dilute the sample
+Lane_04 = RM2					# scaffold_concentration = 20 nM
+
+Lane_05 = T1 					# 50-47,1h/°C, 20 mM MgCl2
+Lane_06 = T2					# 52-49,1h/°C, 20 mM MgCl2
+Lane_07 = T3					# 54-51,1h/°C, 20 mM MgCl2
+Lane_08 = T4					# 56-52,1h/°C, 20 mM MgCl2
+Lane_09 = T5					# 58-54,1h/°C, 20 mM MgCl2
+Lane_10 = T6					# 60-56,1h/°C, 20 mM MgCl2
+Lane_11 = T7					# 62-58,1h/°C, 20 mM MgCl2
+Lane_12 = T8					# 64-60,1h/°C, 20 mM MgCl2
+
+Lane_13 = M5					# 60-45.1h/°C, 5 mM MgCl2
+Lane_14 = M10					# 60-45.1h/°C, 10 mM MgCl2
+Lane_15 = M15					# 60-45.1h/°C, 15 mM MgCl2
+Lane_16 = M20					# 60-45.1h/°C, 20 mM MgCl2
+Lane_17 = M25					# 60-45.1h/°C, 25 mM MgCl2
+Lane_18 = M30					# 60-45.1h/°C, 30 mM MgCl2
+
+Lane_19 = scaffold
+Lane_20 = 1kb_ladder
+
+
+### Gel information ###
+Gelsize = big					# big, small, monster
+Agarose_concentration = 2.0
+Staining = EtBr
+Mg_concentration = 11				# mM
+Voltage= 90					# V
+Running_time = 90				# min
+Cooling = water_bath				# water_bath/ice_bath/no_cooling

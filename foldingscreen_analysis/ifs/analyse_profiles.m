@@ -1,4 +1,4 @@
-function step3_analyse_profiles(name, pname)
+function analyse_profiles(name, pname)
 % step3: IFS analysis pipeline
 % analyse the profiles
     fname = [name  '_data.mat'];

@@ -1,4 +1,4 @@
-function [name] = step1_make_profiles(pname)
+function [name] = make_profiles(pname)
 % step1: IFS analysis pipeline
 % process info of selected fodler
 % process image 
@@ -14,6 +14,8 @@ function [name] = step1_make_profiles(pname)
         tif = [tif_files(1).folder filesep tif_files(1).name];
         [~, folder, ext] = fileparts(pname);
         name = strcat(folder, ext);
+        name = split(name,'__');
+        name = name{1};
         fname = [name  '_data.mat'];
 
         

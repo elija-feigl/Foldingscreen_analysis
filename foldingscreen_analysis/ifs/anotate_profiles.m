@@ -1,4 +1,4 @@
-function step2_anotate_profiles(name, pname, sigma_integrate)
+function anotate_profiles(name, pname, sigma_integrate)
 % step2: IFS analysis pipeline
 % anotate the profiles by marking species
     fname = [name  '_data.mat'];
