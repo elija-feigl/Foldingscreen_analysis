@@ -15,7 +15,9 @@ function [parsed_data, warnings] = parse_gel_info(filepath, log_file)
     logfile_ID = fopen(log_file,'a');
     fprintf(logfile_ID,'%s\n', ['Parsing file: ' filepath]);
     disp(['Parsing file: ' filepath])
-
+    
+    
+    info = ["user", "project", "design_name", "date", "scaffold_type", "lattice_type", "tem_verified" ,"comment", "scaffold_concentration", "staple_concentration","comment", "Lane_" "Gelsize", "Agarose_concentration","Staining", "Mg_concentration" ,"Voltage", "Running_time","Cooling"];
     for i=1:length(lines)
         if ~isempty(lines{i}) % if line containes text, e.i. is not empty
             seg = split(lines{i}, {'=', ':'}); % split at = or :
@@ -33,80 +35,21 @@ function [parsed_data, warnings] = parse_gel_info(filepath, log_file)
             end
             
             
-            %disp(seg{2})
-            % user
-            if strcmpi(strrep(seg{1}, ' ', ''), 'user')
-                parsed_data.user = strtrim(seg{2});
-            end
-            % project
-            if strcmpi(strrep(seg{1}, ' ', ''), 'project')
-                parsed_data.project = strtrim(seg{2});
-            end
-            % Design_name
-            if strcmpi(strrep(seg{1}, ' ', ''), 'design_name')
-                parsed_data.design_name = strtrim(seg{2});
-            end
-            % Date
-            if strcmpi(strrep(seg{1}, ' ', ''), 'date')
-                parsed_data.date = strtrim(seg{2});
-            end
-            % Scaffold_type
-            if strcmpi(strrep(seg{1}, ' ', ''), 'scaffold_type')
-                parsed_data.scaffold_type = strtrim(seg{2});
-            end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'lattice_type')
-                parsed_data.lattice_type = strtrim(seg{2});
-            end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'tem_verified')
-                parsed_data.tem_verified = strtrim(seg{2});
-            end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'comment')
-                parsed_data.comment = strtrim(seg{2});
-            end  
-            if strcmpi(strrep(seg{1}, ' ', ''), 'scaffold_concentration')
-                parsed_data.scaffold_concentration = str2num(strtrim(seg{2}));
-            end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'staple_concentration')
-                parsed_data.staple_concentration = str2num(strtrim(seg{2}));
-            end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'comment')
-                parsed_data.comment = strtrim(seg{2});
-            end
-
-            % Lanes
-            for l=1:20
-                if strcmpi(strrep(seg{1}, ' ', ''), ['Lane_' sprintf('%02i', l)])
-                    parsed_data.lanes{l} = strtrim(seg{2});
-                end
-            end
-            for l=1:9 % also include text where people worte Lane_1 instead of Lane_01
-                if strcmpi(strrep(seg{1}, ' ', ''), ['Lane_' sprintf('%i', l)])
-                    parsed_data.lanes{l} = strtrim(seg{2});
-                end
-            end
+            key = strrep(seg{1}, ' ', '');
             
-            % Gel parameters
-            if strcmpi(strrep(seg{1}, ' ', ''), 'Gelsize')
-                parsed_data.gelsize = strtrim(seg{2});
+            if contains(key, "Lane_")
+                l = str2num(erase(key, "Lane_"))
+                key = "Lane_"
             end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'Agarose_concentration')
-                parsed_data.agarose_concentration = strtrim(seg{2});
-            end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'Staining')
-                parsed_data.staining = strtrim(seg{2});
-            end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'Mg_concentration')
-                parsed_data.mg_concentration = strtrim(seg{2});
-            end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'Voltage')
-                parsed_data.voltage = strtrim(seg{2});
-            end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'Running_time')
-                parsed_data.running_time = strtrim(seg{2});
-            end
-            if strcmpi(strrep(seg{1}, ' ', ''), 'Cooling')
-                parsed_data.cooling = strtrim(seg{2});
-            end
+            if  any (strcmpi (info, key))
+                if any (strcmpi(["scaffold_concentration", "staple_concentration"], key))
+                    parsed_data.(lower(key)) = str2num(strtrim(seg{2}));
+                elseif key == "Lane_"
+                    parsed_data.lanes{l} = strtrim(seg{2});
+                else
+                    parsed_data.(lower(key)) = strtrim(seg{2});
+                end
+            end  
         end
     end
     %disp(['File ' filepath ' parsed.'])
