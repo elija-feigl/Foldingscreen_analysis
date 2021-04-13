@@ -63,33 +63,6 @@ function [parsed_data, warnings] = parse_gel_info(filepath, log_file)
                 advanced = true;
             end
     end
-    %{
-        if key_str(i) == "1kb" || key_str(i) == "ladder"
-            index_list[index] = []
-            parse.lanes.ladder = {parsed_data.lanes{index}}
-            
-        elseif key_str(i) == "scaf"
-            parse.lanes.scaffold = {parsed_data.lanes{index}}
-            index_list[index] = []
-        else
-            parse.lanes.mono = {parsed_data.lanes{index_list}}
-        end
-    end
-    %}
-    
-    
-    %{
-    lanes = parsed_data.lanes
-    for i=1:length(lanes)
-        if contains(parsed_data.lanes, "1kb",'IgnoreCase',true) || contains(parsed_data.lanes{1}, "ladder",'IgnoreCase',true)
-            parsed_data.species.ladder = lanes(i)
-        elseif contains(parsed_data.lanes{1}, "scaf",'IgnoreCase',true)
-            parsed_data.species.scaffold = lanes(i)
-        else
-            parsed_data.species.scaffold = lanes(i)
-        end
-    end
-    %}
     
     if advanced
         parsed_data.lanes_unparsed = parsed_data.lanes; % save un-parsed data
@@ -102,25 +75,21 @@ function [parsed_data, warnings] = parse_gel_info(filepath, log_file)
         end
     end
     
-    %put each lane into its catagory: (ladder, scaffold, mono)
-    
+    %% put each lane into its catagory: (ladder, scaffold, mono)
     index_list = 1:length(parsed_data.lanes);  
     ladder_index = find(contains(parsed_data.lanes, "ladder"));
     scaff_index = find(contains(parsed_data.lanes, "scaff"));
     
     if ladder_index
         parsed_data.species.ladder = {parsed_data.lanes{ladder_index}};
-        %index_list(ladder_index) = []
     end 
     
     if scaff_index
         parsed_data.species.scaffold = {parsed_data.lanes{scaff_index}};
-        %index_list(scaff_index) = []
     end
     
     index_list([ladder_index scaff_index]) = [];
     parsed_data.species.mono = {parsed_data.lanes{index_list}};
-    
     
    fclose(logfile_ID);
 
