@@ -81,15 +81,15 @@ function [parsed_data, warnings] = parse_gel_info(filepath, log_file)
     scaff_index = find(contains(parsed_data.lanes, "scaff"));
     
     if ladder_index
-        parsed_data.species.ladder = {parsed_data.lanes{ladder_index}};
+        parsed_data.species.ladder = [num2cell(ladder_index) ;{parsed_data.lanes{ladder_index}}];
     end 
     
     if scaff_index
-        parsed_data.species.scaffold = {parsed_data.lanes{scaff_index}};
+        parsed_data.species.scaffold = [num2cell(scaff_index) ;{parsed_data.lanes{scaff_index}}];
     end
     
     index_list([ladder_index scaff_index]) = [];
-    parsed_data.species.mono = {parsed_data.lanes{index_list}};
+    parsed_data.species.mono = [num2cell(index_list) ;{parsed_data.lanes{index_list}}];
     
    fclose(logfile_ID);
 
