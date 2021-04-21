@@ -1,6 +1,6 @@
 % NOTE: modified from MATLABTOOLBOX
 
-function gelData = get_gel_lanes(imageData,varargin)
+function profileData = get_gel_lanes(imageData,varargin)
 %% Loads image, fits lanes according to step function convolved with gaussian
 %   INPUTS:
 %       imageData from load_gel_image.m
@@ -133,6 +133,7 @@ while strcmp(init_lanes_ok,'No')
         lanePositions = find_lanes_intersect(image_sum, selectedArea);
     end
     
+    lane_boxes = lanePositions;
     % ask whether initials lanes are ok
     fig = plot_image_ui(image_sum);
     title('initial lanes');
@@ -301,12 +302,13 @@ for i = 1:nr_lanes
     lanePositions(i,4) = selectedArea(2)+selectedArea(4)-1;
 end
 
-gelData = struct('profiles',{laneProfiles},'lanePositions',lanePositions,'imageNames',{imageData.filenames},'fullProfiles',{fullLaneProfiles});
-gelData.pathnames = imageData.pathnames;
-gelData.filenames = imageData.filenames;
+profileData = struct('profiles',{laneProfiles},'lanePositions',lanePositions,'imageNames',{imageData.filenames},'fullProfiles',{fullLaneProfiles});
+profileData.pathnames = imageData.pathnames;
+profileData.filenames = imageData.filenames;
+profileData.lane_boxes = lane_boxes;
 
 if background_bool
-    gelData.background = imageData.background;
+    profileData.background = imageData.background;
 end
 
 end
