@@ -76,20 +76,38 @@ function [parsed_data, warnings] = parse_gel_info(filepath, log_file)
     end
     
     %% put each lane into its catagory: (ladder, scaffold, mono)
-    index_list = 1:length(parsed_data.lanes);  
+    parsed_data.lanes = string(parsed_data.lanes)
+    index_list = 1:length(parsed_data.lanes); 
     ladder_index = find(contains(parsed_data.lanes, "ladder"));
     scaff_index = find(contains(parsed_data.lanes, "scaff"));
     
     if ladder_index
-        parsed_data.species.ladder = [num2cell(ladder_index) ;{parsed_data.lanes{ladder_index}}];
+        parsed_data.species.ladder.type = "ladder"
+        parsed_data.species.ladder.index = ladder_index ;
+        parsed_data.species.ladder.name = parsed_data.lanes(ladder_index);
+        
+    else
+        parsed_data.species.ladder = [];
+        parsed_data.species.ladder.type = "none";
+        parsed_data.species.ladder.index = []
     end 
     
     if scaff_index
-        parsed_data.species.scaffold = [num2cell(scaff_index) ;{parsed_data.lanes{scaff_index}}];
+        parsed_data.species.scaffold.type = "scaffold"
+        parsed_data.species.scaffold.index = scaff_index ;
+        parsed_data.species.scaffold.name = parsed_data.lanes(scaff_index);
+    else
+        parsed_data.species.scaffold = [];
+        parsed_data.species.scaffold.type = "none";
+        parsed_data.species.scaffold.index = []
     end
     
     index_list([ladder_index scaff_index]) = [];
-    parsed_data.species.mono = [num2cell(index_list) ;{parsed_data.lanes{index_list}}];
+    parsed_data.species.mono.type = "mono"
+    parsed_data.species.mono.index = index_list;
+    parsed_data.species.mono.name = parsed_data.lanes(index_list);
+    
+    
     
    fclose(logfile_ID);
 
