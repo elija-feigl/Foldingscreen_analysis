@@ -73,8 +73,8 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
         plot_image_ui(gelData.images{1});
         hold on
         
-        % select area for pockets
         while ~pocket_ok
+            % select area for pockets
             title('Select pockets area')
             rect_pocket = drawrectangle('Label','Pocket','Color',[1 0 0]);
             gelInfo.species.pocket.positions = int32(rect_pocket.Position);
@@ -136,8 +136,8 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
         
         %% Staple Selection
         
-        gelInfo.species.staples.index = gelInfo.species.mono.index;
-        gelInfo.species.staples.type = "staple";
+        gelInfo.species.staple.index = gelInfo.species.mono.index;
+        gelInfo.species.staple.type = "staple";
         
         while ~staple_ok
             title('Select staple line (double click to place last)')
@@ -153,15 +153,15 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
             
             if length(pos_staple) == 2
                 selectedStaple_y = linspace(pos_staple(1,2), pos_staple(2,2), nLanes_mono);
-                gelInfo.species.staples.positions = [ones(1,nLanes_mono,'uint32')' selectedStaple_y'];
+                gelInfo.species.staple.positions = [ones(1,nLanes_mono,'uint32')' selectedStaple_y'];
 
             elseif length(pos_staple) == 1
                 selectedStaple_y = linspace(pos_staple(1,2), pos_staple(1,2), nLanes_mono);
-                gelInfo.species.staples.positions = [ones(1,nLanes_mono,'uint32')' selectedStaple_y'];
+                gelInfo.species.staple.positions = [ones(1,nLanes_mono,'uint32')' selectedStaple_y'];
 
             else
                 pos_staple = int32(pos_staple);
-                gelInfo.species.staples.positions = pos_staple(1:nLanes_mono, :);
+                gelInfo.species.staple.positions = pos_staple(1:nLanes_mono, :);
             end
         end
         
@@ -182,11 +182,13 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
         x = double(xpos_pocket:xpos_pocket+height);
         gelInfo.species.pocket.fits =  coeffvalues(fit(x', y, 'gauss1'));
         
-        gelInfo.species.ladder.fits = calculate_fit(profileData, gelInfo.species.ladder, ladderHeight, xpos_pocket); 
-        gelInfo.species.scaffold.fits = calculate_fit(profileData, gelInfo.species.scaffold, scaffoldHeight, xpos_pocket);
-        gelInfo.species.mono.fits = calculate_fit(profileData, gelInfo.species.mono, bandHeight, xpos_pocket); 
-        gelInfo.species.staples.fits = calculate_fit(profileData, gelInfo.species.staples, stapleHeight, xpos_pocket);
+        height_types = ["ladder" "scaffold"  "mono" "staple"];
+        heights = [ladderHeight, scaffoldHeight, bandHeight, stapleHeight];
         
+        for i=1:length(height_types)
+            gelInfo.species.(height_types(i)).fits = calculate_fit(profileData, gelInfo.species.(height_types(i)), (heights(i)), xpos_pocket); 
+        end
+            
         %% get band data
         
         % TODO: change this after adapting the file: plot_band_fits to the
@@ -203,18 +205,19 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
         
         
         staples_fits = zeros(nLanes_ladder + nLanes_mono+ nLanes_scaffold, 3);
-        staples_fits(gelInfo.species.mono.index, :) = gelInfo.species.staples.fits;
+        staples_fits(gelInfo.species.mono.index, :) = gelInfo.species.staple.fits;
        
         %% add to profiles structure
         % NOTE: output necessary for legacy python code(ifs database code) 
         
         profileData.aggregateFit = gelInfo.species.pocket.fits;
         profileData.aggregateSelectedArea = gelInfo.species.pocket.positions;
-        profileData.monomerFits = mono_fits;
+        profileData.monomerFits = mono_fits; % ladder, scaffold and monomers fits
         profileData.monomerSelectedArea = gelInfo.species.mono.positions;
-        profileData.stapleLine = gelInfo.species.staples.positions;
-        profileData.stapleFits = staples_fits;
+        profileData.stapleLine = gelInfo.species.staple.positions;
+        profileData.stapleFits = staples_fits; 
         profileData.has_ladder = has_ladder;
+        profileData.species = gelInfo.species;
     
         %% Display results and ask if ok
         close all
