@@ -1,54 +1,58 @@
-function [profileData] = integrate_species(profileData)
+function [profileData] = integrate_species(profileData, gelInfo)
 % @ step2
 % compute fractions of selected species per lane
 
-    %% integrate aggregates
-    n = length(profileData.profiles);
+    % integrate aggregates, monomers and smear
+    n = length(gelInfo.loop_indices);
+    
+    mu = gelInfo.pocket.fits(2);
+    sig = gelInfo.pocket.fits(3) * gelInfo.sigma_integrate;
+    
     pocket_sums = zeros(n, 1);
     pocket_boundaries = zeros(n,2);
-    mu = profileData.aggregateFit(2);
-    sig = profileData.aggregateFit(3) * profileData.sigma_integrate;
-    for i=1:n
-        if profileData.monomerFits(i,1) == 0.0 %ignored lane
-            pocket_sums(i) = 1.0;
-        else 
-            pocket_boundaries(i,:) = [max(1,round(mu-sig)) round(mu+sig)];
-            pocket_sums(i) = sum(profileData.fullProfiles{i}(pocket_boundaries(i,1):pocket_boundaries(i,2) ));
+    
+    monomer_sums = zeros(n,1);
+    monomer_boundaries = zeros(n,2);
+    
+    smear_sums = zeros(n,1);
+    smear_boundaries = zeros(n,2);
+
+    for i = 1:n
+        idx = gelInfo.loop_indices(i);
+        [species,  pos] = get_lanes_from_idx(gelInfo, idx);
+        
+        if species.type == "ladder" || species.type == "scaffold"
+            % integrate aggregates
+            pocket_sums(idx) = 1.0;
+            
+            % integrate monomers
+            monomer_sums(idx) = 0.0;
+            
+            % intergrate smear
+            smear_sums(i) = 0.0;
+        else
+            % integrate aggregates
+            pocket_boundaries(idx,:) = [max(1,round(mu-sig)) round(mu+sig)];
+            pocket_sums(idx) = sum(species.fullprofiles{pos}(pocket_boundaries(idx,1):pocket_boundaries(idx,2) ));
+            
+            % integrate monomers
+            mu_mono = species.fits(pos,2);
+            sig_mono = species.fits(pos,3) * gelInfo.sigma_integrate;
+            monomer_boundaries(idx,:) = [max(1,round(mu_mono-sig_mono)) round(mu_mono+sig_mono)];
+            monomer_sums(idx) = sum(species.fullprofiles{pos}(monomer_boundaries(idx,1):monomer_boundaries(idx,2)));
+            
+            % intergrate smear
+            smear_boundaries(idx,:) = [pocket_boundaries(idx,2) monomer_boundaries(idx,1)];
+            smear_sums(idx) = sum(species.fullprofiles{pos}(smear_boundaries(idx,1):smear_boundaries(idx,2)));
         end
     end
     
-    %% integrate monomers
-    monomer_sums = zeros(n,1);
-    monomer_boundaries = zeros(n,2);
-    for i=1:n
-        if profileData.monomerFits(i,1) == 0.0 
-            monomer_sums(i) = 0.0;
-        else    
-            mu = profileData.monomerFits(i,2);
-            sig = profileData.monomerFits(i,3) * profileData.sigma_integrate;
-            monomer_boundaries(i,:) = [max(1,round(mu-sig)) round(mu+sig)];
-            monomer_sums(i) = sum(profileData.fullProfiles{i}(monomer_boundaries(i,1):monomer_boundaries(i,2)));
-        end
-    end
-
-    %% intergrate smear
-    smear_sums = zeros(n,1);
-    smear_boundaries = zeros(n,2);
-    for i=1:n
-        if profileData.monomerFits(i,1) == 0.0 
-            smear_sums(i) = 0.0;
-        else 
-            smear_boundaries(i,:) = [pocket_boundaries(i,2) monomer_boundaries(i,1)];
-            smear_sums(i) = sum(profileData.fullProfiles{i}(smear_boundaries(i,1):smear_boundaries(i,2)));
-        end
-    end
-
-    profileData.monomerBoundaries = monomer_boundaries;
-    profileData.pocketBoundaries = pocket_boundaries;
+    profileData.monomerBoundaries = monomer_boundaries; %TODO: not used
+    profileData.pocketBoundaries = pocket_boundaries; %TODO: not used
     profileData.monomerTotal = monomer_sums;
     profileData.pocketTotal = pocket_sums;
     profileData.smearTotal = smear_sums;
-    profileData.smearBoundaries = smear_boundaries;
+    profileData.smearBoundaries = smear_boundaries; %TODO: not used
     
 end
 
