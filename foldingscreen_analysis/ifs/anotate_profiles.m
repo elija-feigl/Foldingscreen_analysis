@@ -4,11 +4,13 @@ function anotate_profiles(name, pname, sigma_integrate)
     fname = [name  '_data.mat'];
     data = load([pname filesep fname]); % load data
     % select aggregates and monomer bands
-    data.profileData.sigma_integrate = sigma_integrate;
-    [data.profileData, data.gelInfo] = select_species(data.profileData, data.gelData, data.gelInfo); 
+    data.gelInfo.sigma_integrate = sigma_integrate;
+
+    [data.profileData, data.gelInfo] = select_species(data.profileData, data.gelData, data.gelInfo);
+
 
     % integrate aggregates, smear, and monomer bands
-    data.profileData = integrate_species(data.profileData);
+    data.profileData = integrate_species(data.profileData, data.gelInfo);
     
     % save
     disp(['Saving to ' pname filesep fname]);
