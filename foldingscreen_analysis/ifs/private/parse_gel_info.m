@@ -77,37 +77,41 @@ function [parsed_data, warnings] = parse_gel_info(filepath, log_file)
     
     %% put each lane into its catagory: (ladder, scaffold, mono)
     parsed_data.lanes = string(parsed_data.lanes);
-    index_list = 1:length(parsed_data.lanes); 
-    ladder_index = find(contains(parsed_data.lanes, "ladder"));
-    scaff_index = find(contains(parsed_data.lanes, "scaff"));
+    indices_list = 1:length(parsed_data.lanes); 
+    ladder_indices = find(contains(parsed_data.lanes, "ladder"));
+    scaff_indices = find(contains(parsed_data.lanes, "scaff"));
     
-    if ladder_index
+    if ladder_indices
         parsed_data.species.ladder.type = "ladder";
-        parsed_data.species.ladder.index = ladder_index ;
-        parsed_data.species.ladder.name = parsed_data.lanes(ladder_index);
+        parsed_data.species.ladder.indices = ladder_indices ;
+        parsed_data.species.ladder.lane_name = parsed_data.lanes(ladder_indices);
+
         
     else
         parsed_data.species.ladder = [];
         parsed_data.species.ladder.type = "none";
-        parsed_data.species.ladder.index = [];
+        parsed_data.species.ladder.indices = [];
     end 
     
-    if scaff_index
+    if scaff_indices
         parsed_data.species.scaffold.type = "scaffold";
-        parsed_data.species.scaffold.index = scaff_index ;
-        parsed_data.species.scaffold.name = parsed_data.lanes(scaff_index);
+        parsed_data.species.scaffold.indices = scaff_indices ;
+        parsed_data.species.scaffold.lane_name = parsed_data.lanes(scaff_indices);
     else
         parsed_data.species.scaffold = [];
         parsed_data.species.scaffold.type = "none";
-        parsed_data.species.scaffold.index = [];
+        parsed_data.species.scaffold.indices = [];
     end
     
-    index_list([ladder_index scaff_index]) = [];
+    indices_list([ladder_indices scaff_indices]) = [];
     parsed_data.species.mono.type = "mono";
     
     
-    parsed_data.species.mono.index = index_list;
-    parsed_data.species.mono.name = parsed_data.lanes(index_list);
+    parsed_data.species.mono.indices = indices_list;
+    parsed_data.species.mono.lane_name = parsed_data.lanes(indices_list);
+    
+    species = parsed_data.species;
+    parsed_data.loop_indices = cat(2, species.ladder.indices , species.scaffold.indices , species.mono.indices);
     
     
     
