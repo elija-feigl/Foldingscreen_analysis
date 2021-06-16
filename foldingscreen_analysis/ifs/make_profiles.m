@@ -1,4 +1,4 @@
-function [name] = make_profiles(pname)
+function [name, data] = make_profiles(pname)
 % step1: IFS analysis pipeline
 % process info of selected fodler
 % process image 
@@ -19,10 +19,14 @@ function [name] = make_profiles(pname)
         fname = [name  '_data.mat'];
 
         
-        [gelData, gelInfo, profileData] = compute_profiles(pname, name, txt, tif);
+        [profileData, gelData, gelInfo] = compute_profiles(pname, name, txt, tif);
         % save data
         disp('Saving data... please wait')
-        save([pname filesep fname], 'gelData', 'gelInfo', 'profileData' )
+        save([pname filesep fname], 'gelData', 'gelInfo', 'profileData')
+
+        data = load([pname '\' fname]); % load data for completion check
+        data.gelInfo.sigma_integrate = 1.0;
+        
         disp(['Data written to: ' [pname filesep fname]])
     end
 end
