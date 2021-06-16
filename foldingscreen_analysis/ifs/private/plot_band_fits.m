@@ -2,27 +2,27 @@
 function plot_band_fits(gelData, gelInfo)
 % plotting lanes and pocket fits
 
-    img_L = gelInfo.pocket.positions(1);
-    img_R = img_L + gelInfo.pocket.positions(3);
+    img_L = gelInfo.pocket.bounding_box(1);
+    img_R = img_L + gelInfo.pocket.bounding_box(3);
     img_plot = gelData.images{1}(:,img_L : img_R);
     imagesc(img_plot, [0 3.*std(img_plot(:))]), axis image, colormap gray, hold on
 
 
     % plot pocket fits
-    mu_p = gelInfo.pocket.fits(2);
-    sig_p = gelInfo.pocket.fits(3) * gelInfo.sigma_integrate;
+    mu_p = gelInfo.pocket.position;
+    sig_p = gelInfo.pocket.width * gelInfo.sigma_integrate;
 
     
-    function plot_fits(gelInfo, species, pos,idx, mu_p, img_L, sig_p)
+    function plot_fits(gelInfo, species, pos, idx, mu_p, img_L, sig_p)
 
-        x = profileData.lanePositions(idx,1:2) - double(img_L);
-        mu = species.fits(pos,2);
+        x = gelInfo.lane_bounding_box(idx,1:2) - double(img_L);
+        mu = species.positions(pos);
         if species.type == "mono"
             st = species.staple.fits(pos,2);
         else
             st = [0 0 0];
         end
-        sig = species.fits(pos,3) * gelInfo.sigma_integrate;
+        sig = species.band_width(pos) * gelInfo.sigma_integrate;
 
         if species.type == "staple"
             c = [1.0, 0.0, 0.0];  
