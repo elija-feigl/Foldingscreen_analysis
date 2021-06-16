@@ -1,18 +1,7 @@
-function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
+function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo) %TODO: delete profileData
 % @ step2
 % select context specfic areas in gel and calculate bands with gauss fit
 
-
-    
-    %TODO: python legacy code
-    %{
-    if length(ladder_index) > 1
-        has_ladder = true;
-    else
-        has_ladder = false;
-    end
-    %}
-    
     mono_index = gelInfo.species.mono.indices;
     nLanes_mono =  length(mono_index);
 
@@ -22,8 +11,7 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
     ladder_index = gelInfo.species.ladder.indices;
     nLanes_ladder = length(ladder_index);
     
-    peaks_ok = false;
-    while ~peaks_ok
+    while ~gelInfo.peaks_ok
         
         lad_scaf_ok = false;
         mono_ok = false;
@@ -38,7 +26,7 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
             % select area for pockets
             title('Select pockets area')
             rect_pocket = drawrectangle('Label','Pocket','Color',[1 0 0]);
-            gelInfo.pocket.positions = int32(rect_pocket.Position);
+            gelInfo.pocket.bounding_box = int32(rect_pocket.Position);
             pocket_ok = strcmp(questdlg('Are you ok with the selected Pocket?','Peaks found?' ,'No','Yes', 'Yes'),'Yes');
             if ~pocket_ok
                 delete(rect_pocket)
@@ -47,12 +35,12 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
         
         %% Ladder and Scaffold selection
         while ~lad_scaf_ok
-            lad_scaf_indeces = sort([ladder_index  scaffold_index]);
+            lad_scaf_indices = sort([ladder_index  scaffold_index]);
             ladder_counter = 0;
             scaffold_counter = 0;
             
-            for i=1:length(lad_scaf_indeces)
-                if ismember(lad_scaf_indeces(i), ladder_index)
+            for i=1:length(lad_scaf_indices)
+                if ismember(lad_scaf_indices(i), ladder_index)
                     ladder_counter = ladder_counter + 1; % indentation on the gel image
                     title(sprintf('Select Ladder %.f', ladder_counter))
                     pos_ladder = drawpoint('Label',sprintf('L %.f', ladder_counter),'Color','y');
@@ -60,7 +48,7 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
                     gelInfo.species.ladder.positions(ladder_counter) = int32(pos_ladder.Position(2))';
                     
                     
-                elseif ismember(lad_scaf_indeces(i), scaffold_index)
+                elseif ismember(lad_scaf_indices(i), scaffold_index)
                     scaffold_counter = scaffold_counter + 1; % indentation on the gel image
                     title(sprintf('Select Scaffold %.f', scaffold_counter))
                     pos_scaf = drawpoint('Label',sprintf('S %.f', scaffold_counter),'Color',[0 1 0]);
@@ -72,12 +60,7 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
                     disp("Design has no Ladder nor Scaffold")
                 end
             end
-            % adding ladder and scaffold lane profiles to their species
-            gelInfo.species.ladder.fullprofiles = profileData.fullProfiles([ladder_index]);
-            gelInfo.species.ladder.profiles = profileData.profiles([ladder_index]);
-            
-            gelInfo.species.scaffold.fullprofiles = profileData.fullProfiles([scaffold_index]);
-            gelInfo.species.scaffold.profiles = profileData.profiles([scaffold_index]);
+       
             
             lad_scaf_ok = strcmp(questdlg('Are you ok with the selected points?','Peaks found?' ,'No','Yes', 'Yes'),'Yes');
             if ~lad_scaf_ok
@@ -105,9 +88,7 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
             end
             %NOTE: we only take the y component and discard the x component for now
             gelInfo.species.mono.positions = pos_mono(1:nLanes_mono);
-            idx = [gelInfo.species.mono.indices];
-            gelInfo.species.mono.fullprofiles = profileData.fullProfiles(idx);
-            gelInfo.species.mono.profiles = profileData.profiles(idx);
+
         end
         
         %% Staple Selection
@@ -147,6 +128,6 @@ function [profileData, gelInfo] = select_species(profileData, gelData, gelInfo)
         wait(rect_pocket);
         close all
         
-        [profileData, gelInfo, peaks_ok] = species_fits(profileData, gelInfo, gelData);
+        [profileData, gelInfo] = species_fits(profileData, gelInfo, gelData);
     end
 end  
