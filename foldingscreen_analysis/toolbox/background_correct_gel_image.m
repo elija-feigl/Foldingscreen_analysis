@@ -54,6 +54,7 @@ for i = 1:imageData.nrImages
         %determine peak location+half bin size
         loc = 0.5 * (edges(loc) + edges(loc + 1));
         
+        %{
         %display smooth histogram and unsmoothed histogram and peak location
         cf = figure;
         clf
@@ -68,6 +69,7 @@ for i = 1:imageData.nrImages
         legend({'Raw histogram', 'Smoothed histogram', 'Background level'})
         pause
         close(cf)
+        %}
         
         %save background correction value
         background{i} = loc;
