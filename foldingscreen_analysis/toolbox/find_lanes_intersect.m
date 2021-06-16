@@ -14,13 +14,9 @@ function [ lanes ] = find_lanes_intersect( image, pos )
 
     % plot subimage
     cur_fig = figure;
-    % subplot(2, 1, 1)
-    % imagesc(image), axis image, colormap gray
-    % set(gca, 'XLim', [pos(1) pos(1)+pos(3)])
-    % set(gca, 'YLim', [pos(2) pos(2)+pos(4)])
+
 
     %plot horizontal profile and determine threshold interactively
-    % subplot(2, 1, 2)
     plot(x, horizontalProfile, 'b');
     hold on
     hline(min(horizontalProfile), 'k--');
