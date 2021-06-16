@@ -1,21 +1,18 @@
-function [profileData] = integrate_species(profileData, gelInfo)
+function [profileData, gelInfo] = integrate_species(profileData, gelInfo) %TODO: delete profileData
 % @ step2
 % compute fractions of selected species per lane
 
     % integrate aggregates, monomers and smear
     n = length(gelInfo.loop_indices);
     
-    mu = gelInfo.pocket.fits(2);
-    sig = gelInfo.pocket.fits(3) * gelInfo.sigma_integrate;
+    %TODO: delete after adapting part 3
+    profileData.monomerTotal = zeros(n, 1);
+    profileData.pocketTotal = zeros(n, 1);
+    profileData.smearTotal = zeros(n, 1);
     
-    pocket_sums = zeros(n, 1);
-    pocket_boundaries = zeros(n,2);
     
-    monomer_sums = zeros(n,1);
-    monomer_boundaries = zeros(n,2);
-    
-    smear_sums = zeros(n,1);
-    smear_boundaries = zeros(n,2);
+    mu = gelInfo.pocket.position;
+    sig = gelInfo.pocket.width * gelInfo.sigma_integrate;
 
     for i = 1:n
         idx = gelInfo.loop_indices(i);
@@ -23,36 +20,43 @@ function [profileData] = integrate_species(profileData, gelInfo)
         
         if species.type == "ladder" || species.type == "scaffold"
             % integrate aggregates
-            pocket_sums(idx) = 1.0;
+            gelInfo.species.(species.type).pocket_sums(pos) = 1.0;
+            profileData.pocket_sums(idx) = 1.0; %TODO: delete after adapting part 3
             
             % integrate monomers
-            monomer_sums(idx) = 0.0;
+            gelInfo.species.(species.type).monomer_sums(pos) = 0.0;
+            profileData.monomer_sums(idx) = 0.0; %TODO: delete after adapting part 3
             
             % intergrate smear
-            smear_sums(i) = 0.0;
+            gelInfo.species.(species.type).smear_sums(pos) = 0.0;
+            profileData.smear_sums(idx) = 0.0; %TODO: delete after adapting part 3
         else
             % integrate aggregates
-            pocket_boundaries(idx,:) = [max(1,round(mu-sig)) round(mu+sig)];
-            pocket_sums(idx) = sum(species.fullprofiles{pos}(pocket_boundaries(idx,1):pocket_boundaries(idx,2) ));
+            pocket_boundaries = [max(1,round(mu-sig)) round(mu+sig)];
+            pocket_sums = sum(species.fullprofiles{pos}(pocket_boundaries(1):pocket_boundaries(2) ));
+            gelInfo.species.(species.type).pocket_sums(pos) = pocket_sums;
+            profileData.pocket_sums(idx) = pocket_sums; %TODO: delete after adapting part 3
+            
             
             % integrate monomers
-            mu_mono = species.fits(pos,2);
-            sig_mono = species.fits(pos,3) * gelInfo.sigma_integrate;
-            monomer_boundaries(idx,:) = [max(1,round(mu_mono-sig_mono)) round(mu_mono+sig_mono)];
-            monomer_sums(idx) = sum(species.fullprofiles{pos}(monomer_boundaries(idx,1):monomer_boundaries(idx,2)));
+            mu_mono = species.positions(pos);
+            sig_mono = species.band_width(pos) * gelInfo.sigma_integrate;
+            monomer_boundaries = [max(1,round(mu_mono-sig_mono)) round(mu_mono+sig_mono)];
+            monomer_sums = sum(species.fullprofiles{pos}(monomer_boundaries(1):monomer_boundaries(2)));
+            gelInfo.species.(species.type).monomer_sums(pos) = monomer_sums;
+            profileData.monomer_sums(idx) = monomer_sums; %TODO: delete after adapting part 3
             
             % intergrate smear
-            smear_boundaries(idx,:) = [pocket_boundaries(idx,2) monomer_boundaries(idx,1)];
-            smear_sums(idx) = sum(species.fullprofiles{pos}(smear_boundaries(idx,1):smear_boundaries(idx,2)));
+            smear_boundaries = [pocket_boundaries(2) monomer_boundaries(1)];
+            smear_sums = sum(species.fullprofiles{pos}(smear_boundaries(1):smear_boundaries(2)));
+            gelInfo.species.(species.type).smear_sums(pos) = smear_sums;
+            profileData.smear_sums(idx) = smear_sums; %TODO: delete after adapting part 3
         end
     end
     
-    profileData.monomerBoundaries = monomer_boundaries; %TODO: not used
-    profileData.pocketBoundaries = pocket_boundaries; %TODO: not used
-    profileData.monomerTotal = monomer_sums;
-    profileData.pocketTotal = pocket_sums;
-    profileData.smearTotal = smear_sums;
-    profileData.smearBoundaries = smear_boundaries; %TODO: not used
+    
+    
+
     
 end
 
