@@ -111,7 +111,7 @@ function [parsed_data, warnings] = parse_gel_info(filepath, log_file)
     parsed_data.species.mono.lane_name = parsed_data.lanes(indices_list);
     
     species = parsed_data.species;
-    parsed_data.loop_indices = cat(2, species.ladder.indices , species.scaffold.indices , species.mono.indices);
+    parsed_data.loop_indices = [species.ladder.indices  species.scaffold.indices  species.mono.indices];
     
     
     
