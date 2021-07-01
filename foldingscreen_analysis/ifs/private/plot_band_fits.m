@@ -16,7 +16,7 @@ function plot_band_fits(gelData, gelInfo)
     function plot_fits(gelInfo, species, pos, idx, mu_p, img_L, sig_p)
 
         x = gelInfo.lane_bounding_box(idx,1:2) - double(img_L);
-        mu = species.positions(pos);
+        mu = species.band_positions(pos);
         if species.type == "mono"
             st = species.staple.fits(pos,2);
         else
@@ -24,7 +24,7 @@ function plot_band_fits(gelData, gelInfo)
         end
         sig = species.band_width(pos) * gelInfo.sigma_integrate;
 
-        if species.type == "staple"
+        if species.type == "mono"
             c = [1.0, 0.0, 0.0];  
 
         elseif mu < mu_p
@@ -47,7 +47,6 @@ function plot_band_fits(gelData, gelInfo)
 
         [species,  pos] = get_lanes_from_idx(gelInfo, idx);
         plot_fits(gelInfo, species, pos, idx, mu_p, img_L, sig_p)
-    end
-    
+    end   
 end
 
