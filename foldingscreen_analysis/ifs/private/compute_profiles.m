@@ -1,4 +1,4 @@
-function [profileData, gel, gelInfo] = compute_profiles(pname, name, txt_file, img_file)
+function [gel, gelInfo] = compute_profiles(pname, name, txt_file, img_file)
 % @ step1
 % calculate profiles from gels
 
@@ -18,16 +18,20 @@ function [profileData, gel, gelInfo] = compute_profiles(pname, name, txt_file, i
     profileData = get_gel_lanes(gel, 'display', 'on', 'cutoff', 0.05, ...
         'number_of_lanes', length(gelInfo.lanes), 'display', 'off', 'move_min_zero', 'Yes');
 
-    % adding ladder and scaffold lane profiles to their species
-      
+    %% adding ladder and scaffold lane profiles to their species
+    gelInfo.lanes_bounding_box = profileData.lanePositions;
+    
+    % Ladder
     ladder_index = gelInfo.species.ladder.indices;
     gelInfo.species.ladder.fullprofiles = profileData.fullProfiles(ladder_index);
     gelInfo.species.ladder.profiles = profileData.profiles(ladder_index);
     
+    % Scaffold
     scaffold_index = gelInfo.species.scaffold.indices;
     gelInfo.species.scaffold.fullprofiles = profileData.fullProfiles(scaffold_index);
     gelInfo.species.scaffold.profiles = profileData.profiles(scaffold_index);
     
+    % Monomers
     idx = gelInfo.species.mono.indices;
     gelInfo.species.mono.fullprofiles = profileData.fullProfiles(idx);
     gelInfo.species.mono.profiles = profileData.profiles(idx);
