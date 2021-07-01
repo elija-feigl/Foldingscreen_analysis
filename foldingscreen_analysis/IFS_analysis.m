@@ -13,4 +13,7 @@ sigma_integrate_band = 1.0;
 data = anotate_profiles(name, pname, data);
 
 % Step 3
+data = compute_metrics(name, pname, data);
+
+% Step 4
 analyse_profiles(name, pname, data);

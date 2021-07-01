@@ -8,13 +8,13 @@ function data = anotate_profiles(name, pname, data)
     catch
         data.gelInfo.peaks_ok = false;      
     end
-
-    % select aggregates and monomer bands
-    [data.profileData, data.gelInfo] = select_species(data.profileData, data.gelData, data.gelInfo); %TODO: delete profileData
-
-
-    % integrate aggregates, smear, and monomer bands
-    [data.profileData, data.gelInfo] = integrate_species(data. profileData, data.gelInfo); %TODO: delete profileData
+    
+    data.gelInfo.sigma_integrate = 1.0;
+    
+    while ~data.gelInfo.peaks_ok
+        % select aggregates and monomer bands
+        data.gelInfo = select_species(data.gelData, data.gelInfo);
+    end
     
     % save
     disp(['Saving to ' pname filesep fname]);
