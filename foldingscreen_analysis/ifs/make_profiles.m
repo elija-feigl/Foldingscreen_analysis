@@ -19,14 +19,11 @@ function [name, data] = make_profiles(pname)
         fname = [name  '_data.mat'];
 
         
-        [profileData, gelData, gelInfo] = compute_profiles(pname, name, txt, tif);
+        [gelData, gelInfo] = compute_profiles(pname, name, txt, tif);
         % save data
         disp('Saving data... please wait')
-        save([pname filesep fname], 'gelData', 'gelInfo', 'profileData')
-
+        save([pname filesep fname], 'gelData', 'gelInfo')
         data = load([pname '\' fname]); % load data for completion check
-        data.gelInfo.sigma_integrate = 1.0;
-        
         disp(['Data written to: ' [pname filesep fname]])
     end
 end
