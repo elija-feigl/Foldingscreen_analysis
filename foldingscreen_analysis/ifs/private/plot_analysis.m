@@ -100,13 +100,13 @@ function [data_out, cur_fig] = plot_analysis(gelInfo, gelData)
     lanes_bounding_box = gelInfo.lanes_bounding_box;
     
     plot(mean([lanes_bounding_box(index_best,1) lanes_bounding_box(index_best, 2) ]) - shift, ...
-            band_fits(index_best,2), 'go');
+            band_fits(index_best,2), 'bo');
         
     plot(mean([lanes_bounding_box(index_best_Tscrn,1) lanes_bounding_box(index_best_Tscrn, 2) ]) - shift , ...
-            band_fits(index_best_Tscrn,2), 'g+');
+            band_fits(index_best_Tscrn,2), 'b+');
         
     plot(mean([lanes_bounding_box(index_best_Mgscrn,1) lanes_bounding_box(index_best_Mgscrn, 2) ]) - shift , ...
-            band_fits(index_best_Mgscrn, 2), 'gx');
+            band_fits(index_best_Mgscrn, 2), 'bx');
         
     title(['Band positions with sigma=' num2str(gelInfo.sigma_integrate)]);
 

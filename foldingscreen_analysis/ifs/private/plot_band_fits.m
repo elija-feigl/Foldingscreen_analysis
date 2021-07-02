@@ -16,6 +16,7 @@ function plot_band_fits(gelData, gelInfo)
     function plot_fits(gelInfo, species, pos, idx, mu_p, img_L, sig_p)
 
         x = gelInfo.lane_bounding_box(idx,1:2) - double(img_L);
+        range = species.fit_range(pos, :);
         mu = species.band_positions(pos);
         if species.type == "mono"
             st = species.staple.fits(pos,2);
@@ -38,6 +39,8 @@ function plot_band_fits(gelData, gelInfo)
         
         % plot leading band fits
         plot([x(1) x(2)] , [mu mu], 'color',  c);
+        plot([x(1) x(2)] , [range(1) range(1)], 'color',  [0.0 1.0 0.0]);
+        plot([x(1) x(2)] , [range(2) range(2)], 'color',  [0.0 1.0 0.0]);
         plot([mean(x) mean(x)], [mu-sig mu+sig],  'color', c);
         plot(mean(x), st, '.', 'color', [1.0 0.77 0.13]);
     end

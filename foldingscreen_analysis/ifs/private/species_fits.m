@@ -2,7 +2,7 @@
 %% Calculate fits
 function gelInfo = species_fits(gelInfo, gelData)
     %% Get band fits
-    function fits = get_band_fit(species, pos)
+    function [fits, fit_range] = get_band_fit(species, pos)
         xpos = species.select_positions(pos) - fix(species.height/2);
         fits = zeros(1, 3);
         
@@ -17,7 +17,8 @@ function gelInfo = species_fits(gelInfo, gelData)
             y = val(xpos:upper);
             x = double(xpos:upper);
             options = fitoptions('gauss1', 'Lower', [0 xpos 0], 'Upper', [Inf upper Inf]);
-
+            
+            fit_range = [options.lower(2) options.upper(2)];
             fits = coeffvalues(fit(x', y, 'gauss1', options));
         end
     end
@@ -101,8 +102,9 @@ function gelInfo = species_fits(gelInfo, gelData)
         
         
         % Species band fits
-        band_fit = get_band_fit(spec,  pos);
+        [band_fit, fit_range] = get_band_fit(spec,  pos);
         gelInfo.species.(spec.type).fits(pos, :) = band_fit;
+        gelInfo.species.(spec.type).fit_range(pos, :) = fit_range;
         gelInfo.species.(spec.type).band_positions(pos) = band_fit(2)';
         gelInfo.species.(spec.type).band_width(pos) = band_fit(3)';
         migration_distance = band_fit(2)' - pocket_position';
