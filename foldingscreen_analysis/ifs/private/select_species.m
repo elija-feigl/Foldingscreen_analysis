@@ -38,22 +38,24 @@ function  gelInfo = select_species(gelData, gelInfo)
         lad_scaf_indices = sort([ladder_index  scaffold_index]);
         ladder_counter = 0;
         scaffold_counter = 0;
+        
+        points = images.roi.Point.empty();
 
         for i=1:length(lad_scaf_indices)
             if ismember(lad_scaf_indices(i), ladder_index)
                 ladder_counter = ladder_counter + 1; % indentation on the gel image
                 title(sprintf('Select Ladder %.f', ladder_counter))
-                pos_ladder = drawpoint('Label',sprintf('L %.f', ladder_counter),'Color','y');
+                points(i) = drawpoint('Label',sprintf('L %.f', ladder_counter),'Color','y');
                 %NOTE: we only take the y component and discard the x component for now
-                gelInfo.species.ladder.select_positions(ladder_counter) = int32(pos_ladder.Position(2))';
+                gelInfo.species.ladder.select_positions(ladder_counter) = int32(points(i).Position(2))';
 
 
             elseif ismember(lad_scaf_indices(i), scaffold_index)
                 scaffold_counter = scaffold_counter + 1; % indentation on the gel image
                 title(sprintf('Select Scaffold %.f', scaffold_counter))
-                pos_scaf = drawpoint('Label',sprintf('S %.f', scaffold_counter),'Color',[0 1 0]);
+                points(i) = drawpoint('Label',sprintf('S %.f', scaffold_counter),'Color',[0 1 0]);
                 %NOTE: we only take the y component and discard the x component for now
-                gelInfo.species.scaffold.select_positions(scaffold_counter) = int32(pos_scaf.Position(2))';
+                gelInfo.species.scaffold.select_positions(scaffold_counter) = int32(points(i).Position(2))';
 
 
             else
@@ -63,8 +65,7 @@ function  gelInfo = select_species(gelData, gelInfo)
 
         lad_scaf_ok = strcmp(questdlg('Are you ok with the selected points?','Peaks found?' ,'No','Yes', 'Yes'),'Yes');
         if ~lad_scaf_ok
-            delete(pos_scaf)
-            delete(pos_ladder)
+            delete(points)
             continue
         end
     end
