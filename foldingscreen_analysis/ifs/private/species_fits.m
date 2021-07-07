@@ -13,6 +13,7 @@ function gelInfo = species_fits(gelInfo, gelData)
             fits(1) = 0.0;
             fits(2) = pocket_position;
             fits(3) = 0.0;
+            fit_range = pocket_position;
         else
             y = val(xpos:upper);
             x = double(xpos:upper);
