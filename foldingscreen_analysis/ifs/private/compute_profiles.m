@@ -14,6 +14,17 @@ function [gel, gelInfo] = compute_profiles(pname, name, txt_file, img_file)
     % gelData_raw = check_gel_saturation(gelData_raw);
     
     gel = background_correct_gel_image(gelData_raw, 'histogram_background', 'on');
+
+    if length(size(gel.images{1})) > 2
+        gel.images{1} = mean(gel.images{1}, 3);
+    end
+
+    norm_img = mat2gray(gel.images{1});
+    
+    if mean(mean(norm_img)) > 0.5 
+        gel.images{1} = imcomplement(gel.images{1});
+    end
+    
     % NOTE: in rare cases the values below zero still apear
     % TODO: pocket correction would be nice
     % get profileData
