@@ -133,7 +133,6 @@ while strcmp(init_lanes_ok,'No')
         lanePositions = find_lanes_intersect(image_sum, selectedArea);
     end
     
-    lane_boxes = lanePositions;
     % ask whether initials lanes are ok
     fig = plot_image_ui(image_sum);
     title('initial lanes');
@@ -305,7 +304,6 @@ end
 profileData = struct('profiles',{laneProfiles},'lanePositions',lanePositions,'imageNames',{imageData.filenames},'fullProfiles',{fullLaneProfiles});
 profileData.pathnames = imageData.pathnames;
 profileData.filenames = imageData.filenames;
-profileData.lane_boxes = lane_boxes;
 
 if background_bool
     profileData.background = imageData.background;
