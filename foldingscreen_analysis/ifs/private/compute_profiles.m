@@ -10,7 +10,9 @@ function [gel, gelInfo] = compute_profiles(pname, name, txt_file, img_file)
     % load gel
     gelData_raw = load_gel_image('data_dir', pname, 'n_images', 1, 'paths_to_images', {img_file});
     % check and correct raw data
-    gelData_raw = check_gel_saturation(gelData_raw);
+    
+    % gelData_raw = check_gel_saturation(gelData_raw);
+    
     gel = background_correct_gel_image(gelData_raw, 'histogram_background', 'on');
     % NOTE: in rare cases the values below zero still apear
     % TODO: pocket correction would be nice
