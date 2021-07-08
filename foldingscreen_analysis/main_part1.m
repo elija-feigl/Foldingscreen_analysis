@@ -1,4 +1,4 @@
-%% ensure subfolders are in path
+ %% ensure subfolders are in path
 folder = fileparts(mfilename('fullpath'));
 addpath(genpath(folder));
 

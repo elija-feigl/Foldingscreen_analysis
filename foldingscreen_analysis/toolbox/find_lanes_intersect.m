@@ -13,14 +13,10 @@ function [ lanes ] = find_lanes_intersect( image, pos )
     horizontalProfile = sum(area); % integrate along vertical (y-axis) 
 
     % plot subimage
-    cur_fig = figure;
-    % subplot(2, 1, 1)
-    % imagesc(image), axis image, colormap gray
-    % set(gca, 'XLim', [pos(1) pos(1)+pos(3)])
-    % set(gca, 'YLim', [pos(2) pos(2)+pos(4)])
+    cur_fig = figure('WindowState','maximized');
+
 
     %plot horizontal profile and determine threshold interactively
-    % subplot(2, 1, 2)
     plot(x, horizontalProfile, 'b');
     hold on
     hline(min(horizontalProfile), 'k--');
@@ -90,6 +86,13 @@ function [ lanes ] = find_lanes_intersect( image, pos )
        lanes(i, 4)= pos(4); % height stays constant
        lanes(i, 1) = x(r(i*2-1)); % top x-position
        lanes(i, 3) = x(r(i*2))-x(r(i*2-1)); % width
+       
+    end
+    
+    idx = find(lanes(:, 3) < 10);
+    
+    if idx
+        lanes(idx, :) = [];
     end
 
 end

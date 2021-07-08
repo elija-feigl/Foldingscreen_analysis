@@ -8,13 +8,20 @@ sigma_integrate_band = 1.0;
 data = load([pname fname]); % load data for completion check
 name = fname(1:end-9);
 
-is_done = false;
-if isfield(data.profileData, 'aggregateSelectedArea')
-    is_done = ~strcmp(questdlg('Pocket and monomers have already been selected. Redo?','Redo?' ,'No','Yes', 'Yes'),'Yes');
+
+try
+    if data.gelInfo.peaks_ok
+        is_done = ~strcmp(questdlg('Pocket and monomers have already been selected. Redo?','Redo?' ,'No','Yes', 'Yes'),'Yes');
+        if ~is_done
+            data.gelInfo.peaks_ok = false; 
+        end
+    end
+catch
+    data.gelInfo.peaks_ok = false;      
 end
 
-if ~is_done
-    anotate_profiles(name, pname, sigma_integrate_band);
+if ~data.gelInfo.peaks_ok
+    data = anotate_profiles(name, pname, data);
 else
     disp('Nothing to do');
 end

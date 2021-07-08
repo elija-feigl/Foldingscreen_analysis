@@ -9,4 +9,4 @@ name = fname(1:end-9);
 fname = [name  '_data.mat'];
 data = load([pname filesep fname]);
 
-data = compute_metrics(name, pname, data);
+analyse_profiles(name, pname, data);
