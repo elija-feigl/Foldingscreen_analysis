@@ -13,9 +13,13 @@ function gelInfo = metrics(gelInfo)
         if spec.type == "ladder" || spec.type == "scaffold"
             gelInfo.species.(spec.type).folding_quality_metric(pos) = 0.0;
         else
-            folding_quality_metric = spec.fraction_monomer(pos) .* (1.0 - spec.band_spread(pos) .* spreadNormfactor);
-            gelInfo.species.(spec.type).folding_quality_metric(pos) = folding_quality_metric;
-            
+            %NOTE: assuming band spread bigger than one means double peak or a bad band
+            if spec.band_spread(pos) > 1.0 / spreadNormfactor
+                folding_quality_metric = 0;
+            else
+                folding_quality_metric = spec.fraction_monomer(pos) .* (1.0 - spec.band_spread(pos) .* spreadNormfactor);
+            end
+            gelInfo.species.(spec.type).folding_quality_metric(pos) = folding_quality_metric;            
         end
         
         % compute relative migration distance
@@ -34,11 +38,12 @@ function gelInfo = metrics(gelInfo)
        gelInfo.species.ladder.migrate_error = 0.1 ; 
        gelInfo.species.ladder.spread_error = 0.1 ; 
    end
-        
+   
+   %NOTE: scaffold error less accurate - > factor 2
    if length(gelInfo.species.ladder.indices) < 2 && length(gelInfo.species.scaffold.indices) >= 2
         scaffold  = gelInfo.species.scaffold;
-        gelInfo.species.scaffold.migrate_error = abs(scaffold.rel_band_migrate(1) - scaffold.rel_band_migrate(end));
-        gelInfo.species.scaffold.spread_error = abs(scaffold.rel_band_spread(1) - scaffold.rel_band_spread(end));
+        gelInfo.species.scaffold.migrate_error = 2.0 * abs(scaffold.rel_band_migrate(1) - scaffold.rel_band_migrate(end));
+        gelInfo.species.scaffold.spread_error = 2.0 * abs(scaffold.rel_band_spread(1) - scaffold.rel_band_spread(end));
    else
        gelInfo.species.scaffold.migrate_error = 0.1;
        gelInfo.species.scaffold.spread_error = 0.1 ; 
@@ -50,6 +55,11 @@ function gelInfo = metrics(gelInfo)
         tolerance = 1.0 * gelInfo.species.ladder.migrate_error;
     else
         tolerance = 1.0 * gelInfo.species.scaffold.migrate_error;
+    end
+    
+    %NOTE: 0.03 shown to be reasonable lower limit
+    if tolerance < 0.03
+        tolerance = 0.03;
     end
     
     %% Folding quality metric over migration
