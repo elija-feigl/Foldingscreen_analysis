@@ -12,13 +12,14 @@ function [gel, gelInfo] = compute_profiles(pname, name, txt_file, img_file)
     % check and correct raw data
     
     % gelData_raw = check_gel_saturation(gelData_raw);
-    
     gel = background_correct_gel_image(gelData_raw, 'histogram_background', 'on');
-
+    
+    %NOTE: average the third dimension to reduce to 2D s in case of higher dimensions
     if length(size(gel.images{1})) > 2
         gel.images{1} = mean(gel.images{1}, 3);
     end
-
+    
+    %NOTE: normalize image to evaluate intensity and inver the intensity in high intensity images
     norm_img = mat2gray(gel.images{1});
     
     if mean(mean(norm_img)) > 0.5 
@@ -83,6 +84,7 @@ function [gel, gelInfo] = compute_profiles(pname, name, txt_file, img_file)
             plot(profileData.lanePositions(i,3):profileData.lanePositions(i,4), profileData.profiles{i}), hold on
             legend(gelInfo.lanes{i})
         end
+        
         ylabel('Raw Intensity')
         xlabel('Migration distance [px]')
         print(cur_fig, '-dpdf', [pname filesep name '_profiles.pdf']); %save figure
@@ -92,7 +94,5 @@ function [gel, gelInfo] = compute_profiles(pname, name, txt_file, img_file)
     end
     
     close all
-
-
 end
 
